@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
   //   else {
   //     printf("<%d, %s>\n", token.tag, token.lexeme);
   //   }
-  // } while (token.tag != ENDOFFILE);
+  // } while (token.tag != ENDOFFILE && token.tag != ERROR);
   parse(fptr);
   fclose(fptr);
   return EXIT_SUCCESS;

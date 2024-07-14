@@ -4,23 +4,37 @@
 #include "include/lexer.h" 
 //Recursive descent parser for the basic expression grammar:
 /*
+List -> ExprList
 Expr -> termExpr'
 Expr' -> +termExpr' | -termExpr' | term
 term -> factorterm'
 term' -> *factorterm' | /factorterm' | factor
 factor -> num | name | (Expr)
 */
-
+bool list();
 bool term();
 bool expr();
-bool factor();
-bool termP();
 bool exprP();
+bool termP();
+bool factor();
 
 
 token_t currentToken = {0, 0, 0};
 
-void getNextToken() { currentToken = scan();}
+void getNextToken() { 
+  currentToken = scan();
+  printf("CURRENT TOKEN: ");
+  if(currentToken.tag == NUM) printf("%d\n", currentToken.numval);
+  else printf("%s\n", currentToken.lexeme);
+}
+
+bool list() {
+  if(expr()) {
+    if(currentToken.tag == ENDOFFILE) return true;
+    else return list();
+  }
+  return false;
+}
 
 bool term() {
   if(factor()) return termP();
@@ -47,8 +61,8 @@ bool exprP() {
       return false;
     }
   }
-  else if(currentToken.tag == CL_PAR || currentToken.tag == ENDOFFILE) return true;
-  else printf("Error. Expected exprr' prodcution\n");
+  else if(currentToken.tag == CL_PAR || currentToken.tag == ENDOFFILE || currentToken.tag == OP_PAR || currentToken.tag == NUM || currentToken.tag == ID) return true;
+  else printf("Error. Expected expr' prodcution\n");
 }
 
 bool termP() {
@@ -56,14 +70,14 @@ bool termP() {
     getNextToken();
     if(factor()) return termP();
     else {
-      printf("Error. Expected term' production\n");
+      printf("Error. Expected number or id\n");
       return false;
     } 
   }
-  else if(currentToken.tag == CL_PAR || currentToken.tag == ENDOFFILE || currentToken.lexeme[0] == '+' || currentToken.lexeme[0] == '-') {
+  else if(currentToken.tag == CL_PAR || currentToken.tag == ENDOFFILE || currentToken.lexeme[0] == '+' || currentToken.lexeme[0] == '-' || currentToken.tag == NUM || currentToken.tag == ID || currentToken.tag == OP_PAR) {
     return true;
   }
-  else printf("Error. Expected term' production\n");
+  else printf("Error. Expected ), EOF, + or - production\n");
 }
 
 bool factor() {
@@ -89,8 +103,8 @@ bool factor() {
 void parse(FILE* src) {
   initLexer(src);
   getNextToken();
-  if(expr()) {
-    if(currentToken.tag == ENDOFFILE) printf("Success parsing!\n");
+  if(list()) {
+    printf("Success parsing!\n");
   }
   else {
     printf("Error parsing!\n");

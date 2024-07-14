@@ -6,7 +6,7 @@
 #define BUFFER_SIZE 4096
 
 typedef enum {
-  NUM = 256, ID, OPERATOR, OP_PAR, CL_PAR, ENDOFFILE 
+  NUM = 256, ID, OPERATOR, OP_PAR, CL_PAR, ENDOFFILE, ERROR 
 } tokenTag;
 
 typedef struct {

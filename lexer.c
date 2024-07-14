@@ -1,14 +1,14 @@
 #include "include/lexer.h"
 #include <stdbool.h>
 
-int lineNumber = 1, charNumber = 1;
+int lineNumber = 0, charNumber = 1;
 char* currentCharacter = NULL;
 FILE* source = NULL;
 char buffer[BUFFER_SIZE] = {};
 bool endOfFile = 0;
 
 void reloadBuffer() {
-  fgets(buffer, BUFFER_SIZE, source);
+  if(fgets(buffer, BUFFER_SIZE, source) == NULL) endOfFile = 1;
   currentCharacter = buffer;
   charNumber = 1;
   lineNumber++;
@@ -75,10 +75,9 @@ void getOperator(token_t *token) {
 void getId(token_t *token) {
   int i = 0;
   while(isCharacter()) {
-    token->lexeme[i] = *currentCharacter;
+    token->lexeme[i++] = *currentCharacter;
     currentCharacter++;
     charNumber++;
-    i++;
   }
 }
 
@@ -98,11 +97,11 @@ void initLexer(FILE* src) {
 
 token_t scan() {
   token_t currentToken = {0, 0, 0};
+  skipWhitespace();
   if(endOfFile) {
     currentToken.tag = ENDOFFILE;
     return currentToken;
   }
-  skipWhitespace();
   //current character may be pointing to a number, operator or an ID
   if(isNumber()) {
     currentToken.tag = NUM;
@@ -117,7 +116,7 @@ token_t scan() {
     getOperator(&currentToken);
   }
   else if(*currentCharacter == '(' || *currentCharacter == ')') {
-    if(*currentCharacter % 2) {
+    if(*currentCharacter == ')') {
       currentToken.tag = CL_PAR;
       currentToken.lexeme[0] = ')';
     }
@@ -129,11 +128,9 @@ token_t scan() {
     charNumber++;
   }
   else {
-    printf("CHARACTER %d AT LINE %d NOT RECOGNIZED\n");
+    printf("CHARACTER %d AT LINE %d NOT RECOGNIZED. ASCII CODE: %d\n", charNumber, lineNumber, *currentCharacter);
+    currentToken.tag = ERROR;
     return currentToken;
-  }
-  if(*currentCharacter == '\0' || *currentCharacter == '\n') {
-    endOfFile = 1;
   }
   return currentToken;
 }
