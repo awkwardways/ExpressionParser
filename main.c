@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "include/parser.h"
 #include "include/lexer.h"
 
 int main(int argc, char* argv[]) {
@@ -12,17 +13,18 @@ int main(int argc, char* argv[]) {
     printf("ERROR OPENING FILE");
     return EXIT_FAILURE;
   }
-  token_t token;
-  initLexer(fptr);
-  do {
-    token = scan();
-    if(token.tag == NUM) {
-      printf("<NUM, %d>\n", token.numval);
-    }
-    else {
-      printf("<%d, %s>\n", token.tag, token.lexeme);
-    }
-  } while (token.tag != ENDOFFILE);
+  // token_t token;
+  // initLexer(fptr);
+  // do {
+  //   token = scan();
+  //   if(token.tag == NUM) {
+  //     printf("<NUM, %d>\n", token.numval);
+  //   }
+  //   else {
+  //     printf("<%d, %s>\n", token.tag, token.lexeme);
+  //   }
+  // } while (token.tag != ENDOFFILE);
+  parse(fptr);
   fclose(fptr);
   return EXIT_SUCCESS;
 }

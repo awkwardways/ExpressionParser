@@ -118,12 +118,12 @@ token_t scan() {
   }
   else if(*currentCharacter == '(' || *currentCharacter == ')') {
     if(*currentCharacter % 2) {
-      currentToken.tag = OP_PAR;
-      currentToken.lexeme[0] = '(';
-    }
-    else {
       currentToken.tag = CL_PAR;
       currentToken.lexeme[0] = ')';
+    }
+    else {
+      currentToken.tag = OP_PAR;
+      currentToken.lexeme[0] = '(';
     }
     currentCharacter++;
     charNumber++;
@@ -132,7 +132,7 @@ token_t scan() {
     printf("CHARACTER %d AT LINE %d NOT RECOGNIZED\n");
     return currentToken;
   }
-  if(*currentCharacter == '\0') {
+  if(*currentCharacter == '\0' || *currentCharacter == '\n') {
     endOfFile = 1;
   }
   return currentToken;
